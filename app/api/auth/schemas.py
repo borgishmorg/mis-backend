@@ -1,18 +1,7 @@
-from pydantic import (
-    BaseModel,
-    Field
-)
+from pydantic import BaseModel
 
 
 class Tokens(BaseModel):
-    access_token: str = Field(alias='accessToken')
-    refresh_token: str = Field(alias='refreshToken')
-
-
-class Login(BaseModel):
-    login: str
-    password: str
-
-
-class Refresh(BaseModel):
-    token: str
+    access_token: str
+    refresh_token: str
+    token_type: str = 'bearer'
