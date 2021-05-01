@@ -1,0 +1,14 @@
+version: '3'
+
+services: 
+  mis-portgres:
+    image: postgres
+    ports: 
+      - 5432:5432
+    restart: always
+    environment: 
+      POSTGRES_DB: mis
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: example
+    volumes: 
+      - /opt/mis/postgresql:/var/lib/postgresql/data
