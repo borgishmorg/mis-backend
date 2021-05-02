@@ -3,4 +3,3 @@ pyjwt
 SQLAlchemy
 alembic
 psycopg2-binary
-aiosqlite
