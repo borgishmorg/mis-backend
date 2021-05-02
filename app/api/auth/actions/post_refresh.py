@@ -1,15 +1,13 @@
-from fastapi.param_functions import Depends
+from fastapi import Depends
+from app.dependencies import token_payload, TokenPayload, TokenType
+from ..controller import AuthController
 from ..schemas import Tokens
-from fastapi.security import OAuth2PasswordBearer
-
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
 
 def post_refresh(
-    token: str = Depends(oauth2_scheme)
+    token_payload: TokenPayload = Depends(
+        token_payload(token_type=TokenType.REFRESH)
+    ),
+    auth: AuthController = Depends()
 ) -> Tokens:
-    return {
-        'access_token': 'access',
-        'refresh_token': 'refresh'
-    }
+    return auth.refresh_tokens(token_payload.user)

@@ -1,17 +1,20 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from ..controller import AuthController, AuthException
 from ..schemas import Tokens
 
 
 def post_login(
-    form_data: OAuth2PasswordRequestForm = Depends()
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    auth: AuthController = Depends()
 ) -> Tokens:
-    if form_data.username != 'user' or form_data.password != 'user':
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Invalid username or password'
+    try:
+        return auth.get_tokens(
+            login=form_data.username,
+            password=form_data.password
         )
-    return {
-        'access_token': 'access',
-        'refresh_token': 'refresh'
-    }
+    except AuthException as exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exception)
+        )

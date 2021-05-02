@@ -1,5 +1,6 @@
 import os
 import hashlib
+from typing import Union
 
 
 def generate_password_hash(
@@ -17,3 +18,15 @@ def generate_password_hash(
     )
     storage = salt + password_hash
     return storage
+
+
+def check_password_hash(
+    password: str, 
+    hash: Union[str, bytes]
+) -> bool:
+    if type(hash) is str:
+        hash = bytes.fromhex(hash)
+
+    new_hash = generate_password_hash(password, hash[:32])
+
+    return hash == new_hash
