@@ -1,1 +1,1 @@
-from .postgres import session, Session
+from .postgres import session_scope, Session
