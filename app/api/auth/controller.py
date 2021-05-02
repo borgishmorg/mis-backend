@@ -8,13 +8,20 @@ from app.hash import check_password_hash
 from app.settings import settings
 from app.services.postgres import session_scope
 from app.dependencies import TokenPayload
+from app.constants import Constants
 from .schemas import Tokens
 
 
 class AuthException(Exception):
 
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
+    def __init__(self, detail: str) -> None:
+        super().__init__(detail)
+
+
+class WrongUserOrPasswordException(AuthException):
+
+    def __init__(self) -> None:
+        super().__init__(Constants.Auth.WRONG_USER_OR_PASSWORD_MSG)
 
 
 class AuthController:
@@ -38,7 +45,7 @@ class AuthController:
                     password, 
                     user.password_hash)
             ):
-                raise AuthException('Wrong user/password')
+                raise WrongUserOrPasswordException()
             user = TokenPayload.User(**jsonable_encoder(user))
 
         return Tokens(

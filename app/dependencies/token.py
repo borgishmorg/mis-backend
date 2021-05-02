@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from app.settings import settings
+from app.constants import Constants
 
 
 class TokenType(enum.Enum):
@@ -21,7 +22,7 @@ class TokenPayload(BaseModel):
     token_type: str
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=Constants.Token.LOGIN_URL)
 
 
 class TokenException(HTTPException):
@@ -44,15 +45,13 @@ def token_payload(
                 algorithms=settings.JWT_ALGORITHM
             ))
         except jwt.InvalidSignatureError:
-            import traceback
-            traceback.print_exc()
-            raise TokenException('Invalid token signature')
+            raise TokenException(Constants.Token.INVALID_SIGNATURE_MSG)
         except jwt.ExpiredSignatureError:
-            raise TokenException('Token had been expired')
+            raise TokenException(Constants.Token.EXPIRED_SIGNATURE_MSG)
         except jwt.InvalidTokenError:
-            raise TokenException('Invalid token')
+            raise TokenException(Constants.Token.INVALID_TOKEN_MSG)
 
         if payload.token_type != token_type.value:
-            raise TokenException('Wrong token type')
+            raise TokenException(Constants.Token.WRONG_TOKEN_TYPE_MSG)
         return payload
     return dependency
