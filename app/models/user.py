@@ -8,4 +8,4 @@ class User(Base):
 
     id = Column('id', Integer, primary_key=True, autoincrement=True)
     login = Column('login', String(255), nullable=False, unique=True)
-    password_hash = Column('password_hash', String(255), nullable=False)
+    password_hash = Column('password_hash', String(128), nullable=False)

@@ -7,6 +7,7 @@ Create Date: 2021-05-02 14:13:41.129024
 """
 from alembic import op
 import sqlalchemy as sa
+from app.hash import generate_password_hash
 
 
 # revision identifiers, used by Alembic.
@@ -17,13 +18,24 @@ depends_on = None
 
 
 def upgrade():
-    op.create_table('users',
+    users = op.create_table('users',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('login', sa.String(length=255), nullable=False),
-    sa.Column('password_hash', sa.String(length=255), nullable=False),
+    sa.Column('password_hash', sa.String(length=128), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('login')
     )
+    query = sa.insert(users).values([
+        {
+            'login': 'admin', 
+            'password_hash': generate_password_hash('admin').hex()
+        },
+        {
+            'login': 'user', 
+            'password_hash': generate_password_hash('user').hex()
+        }
+    ])
+    op.execute(query)
 
 
 def downgrade():
