@@ -1,5 +1,4 @@
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select, func
 from app.hash import generate_password_hash
 from app.services import session_scope
 from app.models import (
@@ -21,11 +20,13 @@ class UsersController:
         login: str
     ) -> bool:
         'Checks is user with current login exists'
-        query = select(
-            func.count(UserModel.id).label('count')
-        ).where(UserModel.login == login)
         with session_scope() as session:
-            return session.execute(query).scalar() > 0
+            return (
+                session
+                .query(UserModel)
+                .filter(UserModel.login == login)
+                .count()
+            ) > 0
 
     def create_user(
         self,
