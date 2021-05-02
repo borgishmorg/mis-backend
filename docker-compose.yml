@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  mis-backend:
+    build: .
+    image: mis-backend
+    restart: always
+    ports: 
+      - 4100:4000
+    environment: 
+      ENABLE_AUTORELOAD: 'False'
+      ENABLE_DEVELOP_MOD: 'False'
+      ENABLE_RANDOM_JWT_SECRET: 'True'
+      POSTGRES_DSN: 'postgresql://root:example@localhost:5432/mis'
