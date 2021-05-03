@@ -6,7 +6,7 @@ from app.models import (
     User as UserModel
 )
 from app.constants import Constants
-from .schemas import UserLogin, User
+from .schemas import Credentials, User
 
 
 class UserException(Exception):
@@ -25,12 +25,12 @@ class UsersController:
 
     def create_user(
         self,
-        user_login: UserLogin
+        credentials: Credentials
     ) -> User:
         'Creates new user with specified login and password'
-        hash = generate_password_hash(user_login.password).hex()
+        hash = generate_password_hash(credentials.password).hex()
         user = UserModel(
-            login=user_login.login, 
+            login=credentials.login, 
             password_hash=hash
         )
         try:
@@ -39,4 +39,4 @@ class UsersController:
                 session.flush()
                 return User(**jsonable_encoder(user))
         except IntegrityError:
-            raise UserAlreadyExistsException(user_login.login)
+            raise UserAlreadyExistsException(credentials.login)
