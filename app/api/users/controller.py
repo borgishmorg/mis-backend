@@ -21,6 +21,12 @@ class UserAlreadyExistsException(UserException):
         super().__init__(Constants.Users.USER_ALREDY_EXISTS_MSG.format(login=login))
 
 
+class UserDoNotExistsException(UserException):
+
+    def __init__(self, id: int) -> None:
+        super().__init__(Constants.Users.USER_DO_NOT_EXISTS_MSG.format(id=id))
+
+
 class UsersController:
 
     def create_user(
@@ -40,3 +46,19 @@ class UsersController:
                 return User(**jsonable_encoder(user))
         except IntegrityError:
             raise UserAlreadyExistsException(credentials.login)
+
+    def get_user(
+        self,
+        id: int
+    ) -> User:
+        'Returns user with current id'
+        with session_scope() as session:
+            user = (
+                session
+                .query(UserModel)
+                .filter(UserModel.id==id)
+                .first()
+            )
+            if user is None:
+                raise UserDoNotExistsException(id)
+            return User(**jsonable_encoder(user))

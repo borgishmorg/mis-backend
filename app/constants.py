@@ -2,6 +2,7 @@ class Constants:
 
     class Users:
         USER_ALREDY_EXISTS_MSG = 'User with login "{login}" alredy exists'
+        USER_DO_NOT_EXISTS_MSG = 'User with id "{id}" do not exists'
 
     class Auth:
         WRONG_USER_OR_PASSWORD_MSG = 'Wrong user/password'
