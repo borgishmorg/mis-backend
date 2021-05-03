@@ -9,3 +9,7 @@ class Credentials(BaseModel):
 class User(BaseModel):
     id: int
     login: str
+
+
+class Users(BaseModel):
+    users: list[User]

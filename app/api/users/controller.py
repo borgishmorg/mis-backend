@@ -6,7 +6,11 @@ from app.models import (
     User as UserModel
 )
 from app.constants import Constants
-from .schemas import Credentials, User
+from .schemas import (
+    Credentials, 
+    User,
+    Users,
+)
 
 
 class UserException(Exception):
@@ -62,3 +66,15 @@ class UsersController:
             if user is None:
                 raise UserDoNotExistsException(id)
             return User(**jsonable_encoder(user))
+
+    def get_users(
+        self
+    ) -> Users:
+        'Returns all users'
+        with session_scope() as session:
+            users = (
+                session
+                .query(UserModel)
+                .all()
+            )
+            return Users(users=jsonable_encoder(users))
