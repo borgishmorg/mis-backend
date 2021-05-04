@@ -6,7 +6,8 @@ from app.settings import settings
 
 engine = create_engine(
     settings.POSTGRES_DSN, 
-    echo=settings.ENABLE_DEVELOP_MOD
+    echo=settings.ENABLE_DEVELOP_MOD,
+    future=True
 )
 session_maker = sessionmaker(
     bind=engine, 

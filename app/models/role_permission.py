@@ -9,9 +9,9 @@ from .permission import Permission
 class RolePermission(Base):
     __tablename__ = 'role_permissions'
 
-    id = Column('id', Integer, primary_key=True, autoincrement=True)
-    role_id = Column('role_id', ForeignKey(Role.id), nullable=False)
-    permission_id = Column('permission_id', ForeignKey(Permission.id), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    role_id = Column(ForeignKey(Role.id), nullable=False)
+    permission_id = Column(ForeignKey(Permission.id), nullable=False)
 
     __table_args__ = (
         UniqueConstraint('role_id', 'permission_id'),

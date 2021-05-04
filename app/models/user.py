@@ -9,9 +9,9 @@ from .role import Role
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column('id', Integer, primary_key=True, autoincrement=True)
-    login = Column('login', String(255), nullable=False, unique=True)
-    password_hash = Column('password_hash', String(128), nullable=False)
-    role_id = Column('role_id', ForeignKey(Role.id))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    login = Column(String(255), nullable=False, unique=True)
+    password_hash = Column(String(128), nullable=False)
+    role_id = Column(ForeignKey(Role.id))
 
     role = relationship(argument='Role')
