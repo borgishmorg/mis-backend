@@ -2,7 +2,7 @@ import enum
 from typing import Callable, Optional
 import jwt
 from pydantic import BaseModel
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Path
 from fastapi.security import OAuth2PasswordBearer
 from app.settings import settings
 from app.constants import Constants
@@ -48,9 +48,11 @@ class ForbiddenException(HTTPException):
 
 def token_payload(
     token_type: TokenType = TokenType.ACCESS,
+    check_id: bool = False, # skip permissions check if request id equal to current user id
     permissions: Optional[list[Permission]] = None # one of them is required
 ) -> Callable[..., TokenPayload]:
     def dependency(
+        id: Optional[int] = Path(None) if check_id else None,
         token: str = Depends(oauth2_scheme)
     ) -> TokenPayload:
         try:
@@ -71,7 +73,13 @@ def token_payload(
         if payload.token_type != token_type.value:
             raise TokenException(Constants.Token.WRONG_TOKEN_TYPE_MSG)
         # Permission check
-        if permissions is not None:
+        if (
+            permissions is not None 
+            and not (
+                check_id is not None
+                and payload.user.id == id
+            )
+        ):
             for permission in permissions:
                 if permission in payload.user.permissions:
                     break
