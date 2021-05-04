@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -7,8 +8,13 @@ class Credentials(BaseModel):
 
 
 class User(BaseModel):
+    class Role(BaseModel):
+        code: str
+        name: str
+
     id: int
     login: str
+    role: Optional[Role]
 
 
 class Users(BaseModel):

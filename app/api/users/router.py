@@ -18,7 +18,7 @@ router = APIRouter(
 router.add_api_route(
     path='',
     endpoint=post_user,
-    # response_model=,
+    response_model=User,
     methods=['POST']
 )
 router.add_api_route(

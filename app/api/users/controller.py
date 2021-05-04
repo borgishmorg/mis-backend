@@ -1,9 +1,13 @@
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import contains_eager, joinedload
+from sqlalchemy.sql.functions import func
 from app.hash import generate_password_hash
 from app.services import session_scope
 from app.models import (
-    User as UserModel
+    User as UserModel,
+    Permission as PermissionModel,
+    Role as RoleModel,
 )
 from app.constants import Constants
 from .schemas import (
@@ -60,6 +64,7 @@ class UsersController:
             user = (
                 session
                 .query(UserModel)
+                .options(joinedload(UserModel.role))
                 .filter(UserModel.id==id)
                 .first()
             )
