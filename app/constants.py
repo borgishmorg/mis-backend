@@ -13,3 +13,4 @@ class Constants:
         EXPIRED_SIGNATURE_MSG = 'Token had been expired'
         INVALID_TOKEN_MSG = 'Invalid token'
         WRONG_TOKEN_TYPE_MSG = 'Wrong token type'
+        FORBIDDEN_MSG = 'You don\t have permissions to do that'

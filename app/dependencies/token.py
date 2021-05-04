@@ -1,5 +1,5 @@
 import enum
-from typing import Callable
+from typing import Callable, Optional
 import jwt
 from pydantic import BaseModel
 from fastapi import Depends, HTTPException, status
@@ -12,11 +12,20 @@ class TokenType(enum.Enum):
     ACCESS: str = 'access'
     REFRESH: str = 'refresh'
 
+class Permission(str, enum.Enum):
+    ROLES_ADD = 'roles:add'
+    ROLES_EDIT = 'roles:edit'
+    ROLES_VIEW = 'roles:view'
+    USERS_ADD = 'users:add'
+    USERS_EDIT = 'users:edit'
+    USERS_VIEW = 'users:view'
+
 
 class TokenPayload(BaseModel):
     class User(BaseModel):
         id: int
         login: str
+        permissions: list[Permission]
 
     user: User
     token_type: str
@@ -31,8 +40,15 @@ class TokenException(HTTPException):
         super().__init__(status.HTTP_401_UNAUTHORIZED, detail=detail)
 
 
+class ForbiddenException(HTTPException):
+
+    def __init__(self, detail: str) -> None:
+        super().__init__(status.HTTP_403_FORBIDDEN, detail=detail)
+
+
 def token_payload(
-    token_type: TokenType = TokenType.ACCESS
+    token_type: TokenType = TokenType.ACCESS,
+    permissions: Optional[list[Permission]] = None # one of them is required
 ) -> Callable[..., TokenPayload]:
     def dependency(
         token: str = Depends(oauth2_scheme)
@@ -51,7 +67,15 @@ def token_payload(
         except jwt.InvalidTokenError:
             raise TokenException(Constants.Token.INVALID_TOKEN_MSG)
 
+        # Token type check
         if payload.token_type != token_type.value:
             raise TokenException(Constants.Token.WRONG_TOKEN_TYPE_MSG)
+        # Permission check
+        if permissions is not None:
+            for permission in permissions:
+                if permission in payload.user.permissions:
+                    break
+            else:
+                raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
         return payload
     return dependency
