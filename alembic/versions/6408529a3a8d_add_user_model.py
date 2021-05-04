@@ -18,24 +18,13 @@ depends_on = None
 
 
 def upgrade():
-    users = op.create_table('users',
+    op.create_table('users',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('login', sa.String(length=255), nullable=False),
     sa.Column('password_hash', sa.String(length=128), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('login')
     )
-    query = sa.insert(users).values([
-        {
-            'login': 'admin', 
-            'password_hash': generate_password_hash('admin').hex()
-        },
-        {
-            'login': 'user', 
-            'password_hash': generate_password_hash('user').hex()
-        }
-    ])
-    op.execute(query)
 
 
 def downgrade():
