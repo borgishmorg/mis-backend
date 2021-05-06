@@ -11,10 +11,10 @@ with session_scope() as session:
     # https://docs.google.com/spreadsheets/d/1gn1_ilyrgJIaMEI0fL8TGaDO6ZYDnluiyFQ0nKIgMVU
     # Permissions
     permissions_view = Permission(code='permissions:view', name='Просмотр разрешений')
-    roles_add = Permission(code='roles:add', name='Добавление ролей')
+    roles_add = Permission(code='roles:add', name='Добавление/удаление ролей')
     roles_edit = Permission(code='roles:edit', name='Редактирование ролей')
     roles_view = Permission(code='roles:view', name='Просмотр ролей')
-    users_add = Permission(code='users:add', name='Добавление пользователей')
+    users_add = Permission(code='users:add', name='Добавление/удаление пользователей')
     users_edit = Permission(code='users:edit', name='Редактирование пользователей')
     users_view = Permission(code='users:view', name='Просмотр пользователей')
     session.add_all([
