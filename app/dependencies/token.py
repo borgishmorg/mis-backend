@@ -12,7 +12,9 @@ class TokenType(enum.Enum):
     ACCESS: str = 'access'
     REFRESH: str = 'refresh'
 
+
 class Permission(str, enum.Enum):
+    PERMISSIONS_VIEW = 'roles:view'
     ROLES_ADD = 'roles:add'
     ROLES_EDIT = 'roles:edit'
     ROLES_VIEW = 'roles:view'
@@ -72,6 +74,7 @@ def token_payload(
         # Token type check
         if payload.token_type != token_type.value:
             raise TokenException(Constants.Token.WRONG_TOKEN_TYPE_MSG)
+
         # Permission check
         if (
             permissions is not None 

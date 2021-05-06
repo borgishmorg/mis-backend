@@ -10,6 +10,7 @@ from app.models import (
 with session_scope() as session:
     # https://docs.google.com/spreadsheets/d/1gn1_ilyrgJIaMEI0fL8TGaDO6ZYDnluiyFQ0nKIgMVU
     # Permissions
+    permissions_view = Permission(code='permissions:view', name='Просмотр разрешений')
     roles_add = Permission(code='roles:add', name='Добавление ролей')
     roles_edit = Permission(code='roles:edit', name='Редактирование ролей')
     roles_view = Permission(code='roles:view', name='Просмотр ролей')
@@ -17,6 +18,7 @@ with session_scope() as session:
     users_edit = Permission(code='users:edit', name='Редактирование пользователей')
     users_view = Permission(code='users:view', name='Просмотр пользователей')
     session.add_all([
+        permissions_view,
         roles_add, roles_edit, roles_view,
         users_add, users_edit, users_view,
     ])
@@ -26,6 +28,7 @@ with session_scope() as session:
         code='admin', 
         name='Администратор системы',
         permissions=[
+            permissions_view,
             roles_add, roles_edit, roles_view,
             users_add, users_edit, users_view,
         ]
@@ -34,6 +37,7 @@ with session_scope() as session:
         code='head_physician', 
         name='Главный врач',
         permissions=[
+            permissions_view,
             roles_view,
             users_add, users_edit, users_view,
         ]
