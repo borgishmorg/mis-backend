@@ -14,7 +14,7 @@ class TokenType(enum.Enum):
 
 
 class Permission(str, enum.Enum):
-    PERMISSIONS_VIEW = 'roles:view'
+    PERMISSIONS_VIEW = 'permissions:view'
     ROLES_ADD = 'roles:add'
     ROLES_EDIT = 'roles:edit'
     ROLES_VIEW = 'roles:view'
@@ -54,7 +54,7 @@ def token_payload(
     permissions: Optional[list[Permission]] = None # one of them is required
 ) -> Callable[..., TokenPayload]:
     def dependency(
-        id: Optional[int] = Path(None) if check_id else None,
+        id: Optional[int] = Path(None) if check_id else Depends(lambda: None),
         token: str = Depends(oauth2_scheme)
     ) -> TokenPayload:
         try:
