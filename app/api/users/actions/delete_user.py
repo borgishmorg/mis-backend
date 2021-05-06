@@ -4,16 +4,15 @@ from ..controller import UsersController, UserDoesNotExistException
 from ..schemas import User
 
 
-async def get_user(
+async def delete_user(
     id: int = Path(...),
     token_payload: TokenPayload = Depends(token_payload(
-        check_id=True,
-        permissions=[Permission.USERS_VIEW]
+        permissions=[Permission.USERS_ADD]
     )),
     users: UsersController = Depends()
 ) -> User:
     try:
-        return users.get_user(id)
+        return users.delete_user(id)
     except UserDoesNotExistException as exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

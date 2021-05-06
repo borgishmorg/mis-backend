@@ -1,56 +1,151 @@
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
-from app.hash import generate_password_hash
+from app.hash import check_password_hash, generate_password_hash
 from app.services import session_scope
 from app.models import (
     User as UserModel,
+    Role as RoleModel
 )
 from app.constants import Constants
 from .schemas import (
-    Credentials, 
+    UserIn, 
     User,
+    UserInOptional,
     Users,
 )
 
 
-class UserException(Exception):
-
-    def __init__(self, details: str) -> None:
-        super().__init__(details)
-
-
-class UserAlreadyExistsException(UserException):
+class UserAlreadyExistsException(Exception):
 
     def __init__(self, login: str) -> None:
         super().__init__(Constants.Users.USER_ALREDY_EXISTS_MSG.format(login=login))
 
 
-class UserDoNotExistsException(UserException):
+class UserDoesNotExistException(Exception):
 
     def __init__(self, id: int) -> None:
         super().__init__(Constants.Users.USER_DO_NOT_EXISTS_MSG.format(id=id))
 
 
+class RoleDoesNotExistException(Exception):
+
+    def __init__(self, code: str) -> None:
+        super().__init__(f'Role with code "{code}" does not exist')
+
+
+class OldPasswordDoesNotSpecifiedException(Exception):
+
+    def __init__(self) -> None:
+        super().__init__(f'Old password must be specified')
+
+
+class WrongOldPasswordException(Exception):
+
+    def __init__(self) -> None:
+        super().__init__(f'Old password is wrong')
+
+
+class NewPasswordDoesNotSpecifiedException(Exception):
+
+    def __init__(self) -> None:
+        super().__init__(f'New password must be specified')
+
+
 class UsersController:
 
-    def create_user(
+    def add_user(
         self,
-        credentials: Credentials
+        user_in: UserIn
     ) -> User:
-        'Creates new user with specified login and password'
-        hash = generate_password_hash(credentials.password).hex()
+        'Add new user with specified login, password and role'
+        hash = generate_password_hash(user_in.password).hex()
         user = UserModel(
-            login=credentials.login, 
+            login=user_in.login, 
             password_hash=hash
         )
-        try:
-            with session_scope() as session:
+        with session_scope() as session:
+            role = (
+                session
+                .query(RoleModel)
+                .filter_by(code=user_in.role)
+                .first()
+            )
+            if role is None:
+                raise RoleDoesNotExistException(user_in.role)
+            user.role = role
+            try:
                 session.add(user)
                 session.flush()
-                return User(**jsonable_encoder(user))
-        except IntegrityError:
-            raise UserAlreadyExistsException(credentials.login)
+            except IntegrityError:
+                raise UserAlreadyExistsException(user_in.login)
+            return User(
+                id=user.id,
+                login=user.login,
+                role=jsonable_encoder(user.role)
+            )
+
+    def update_user(
+        self,
+        id: int,
+        user_in: UserInOptional
+    ) -> User:
+        'Update user with current id with specified login, password and role'
+        with session_scope() as session:
+            user: UserModel = session.get(UserModel, id)
+            if user is None:
+                raise UserDoesNotExistException(id)
+
+            try:
+                if user_in.login is not None:
+                    user.login = user_in.login
+                
+                if (
+                    user_in.old_password is not None
+                    or user_in.new_password is not None
+                ):
+                    if user_in.old_password is None:
+                        raise OldPasswordDoesNotSpecifiedException()
+                    if user_in.new_password is None:
+                        raise NewPasswordDoesNotSpecifiedException()
+                    if not check_password_hash(
+                        user_in.old_password, 
+                        user.password_hash
+                    ):
+                        raise WrongOldPasswordException()
+                    user.password_hash = generate_password_hash(user_in.new_password).hex()
+
+                if user_in.role is not None:
+                    role = (
+                        session
+                        .query(RoleModel)
+                        .filter_by(code=user_in.role)
+                        .first()
+                    )
+                    if role is None:
+                        raise RoleDoesNotExistException(user_in.role)
+                    user.role = role
+
+                session.flush()
+            except IntegrityError:
+                raise UserAlreadyExistsException(user_in.login)
+            return User(
+                id=user.id,
+                login=user.login,
+                role=jsonable_encoder(user.role)
+            )
+
+    def delete_user(
+        self,
+        id: int
+    ):
+        'Deletes user with current id'
+        with session_scope() as session:
+            user = session.get(UserModel, id)
+            if user is None:
+                raise UserDoesNotExistException(id)
+            session.delete(user) # TODO replace with flag
+            session.flush()
 
     def get_user(
         self,
@@ -60,7 +155,7 @@ class UsersController:
         with session_scope() as session:
             user = session.get(UserModel, id, [joinedload(UserModel.role)])
             if user is None:
-                raise UserDoNotExistsException(id)
+                raise UserDoesNotExistException(id)
             return User(**jsonable_encoder(user))
 
     def get_users(

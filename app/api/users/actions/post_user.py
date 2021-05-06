@@ -1,16 +1,29 @@
 from fastapi import Depends, HTTPException, status
-from ..schemas import Credentials
-from ..controller import UsersController, UserException
+from app.dependencies import token_payload, TokenPayload, Permission
+from ..schemas import UserIn
+from ..controller import (
+    UsersController, 
+    UserAlreadyExistsException,
+    RoleDoesNotExistException
+)
 
 
 async def post_user(
-    credentials: Credentials,
+    user_in: UserIn,
+    token_payload: TokenPayload = Depends(token_payload(
+        permissions=[Permission.USERS_ADD]
+    )),
     users: UsersController = Depends()
 ):
     try:
-        return users.create_user(credentials)
-    except UserException as exception:
+        return users.add_user(user_in)
+    except UserAlreadyExistsException as exception:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
+            detail=str(exception)
+        )
+    except RoleDoesNotExistException as exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(exception)
         )

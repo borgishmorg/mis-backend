@@ -25,7 +25,7 @@ class WrongUserOrPasswordException(AuthException):
 
 
 class AuthController:
-    
+
     def get_tokens(
         self,
         login: str,
@@ -46,8 +46,10 @@ class AuthController:
                     user.password_hash)
             ):
                 raise WrongUserOrPasswordException()
-            user = TokenPayload.User(**jsonable_encoder(user))
-
+            user = TokenPayload.User(
+                **jsonable_encoder(user),
+                permissions=[p.code for p in user.role.permissions],
+            )
         return Tokens(
             access_token=self.get_access_token(user),
             refresh_token=self.get_refresh_token(user)
