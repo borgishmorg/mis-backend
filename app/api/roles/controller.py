@@ -1,6 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
+from app.constants import Constants
 from app.services import session_scope
 from app.models import (
     Role as RoleModel,
@@ -9,28 +10,28 @@ from app.models import (
 from .schemas import Role, RoleIn, Roles
 
 
-class RoleAlredyExistsException(Exception):
+class RoleAlreadyExistsException(Exception):
 
     def __init__(self, code: str) -> None:
-        super().__init__(f'Role with code "{code}" alredy exists')
+        super().__init__(Constants.Roles.ROLE_ALREADY_EXISTS_MSG)
 
 
 class RoleDoesNotExistException(Exception):
 
     def __init__(self, code: str) -> None:
-        super().__init__(f'Role with code "{code}" does not exist')
+        super().__init__(Constants.Roles.ROLE_DOES_NOT_EXIST_MSG.format(code=code))
 
 
 class RoleIsNotEmptyException(Exception):
 
     def __init__(self, code: str) -> None:
-        super().__init__(f'There is one or more users for role with code "{code}"')
+        super().__init__(Constants.Roles.ROLE_IS_NOT_EMPTY_MSG.format(code=code))
 
 
 class PermissionDoesNotExistException(Exception):
 
     def __init__(self, code: str) -> None:
-        super().__init__(f'Permission with code "{code}" does not exist')
+        super().__init__(Constants.Roles.PERMISSION_DOES_NOT_EXIST_MSG.format(code=code))
 
 
 class RolesController:
@@ -55,12 +56,12 @@ class RolesController:
                 if permission is None:
                     raise PermissionDoesNotExistException(code=permission_code)
                 role.permissions.append(permission)
-            
+
             try:
                 session.add(role)
                 session.flush()
             except IntegrityError:
-                raise RoleAlredyExistsException(role_in.code)
+                raise RoleAlreadyExistsException(role_in.code)
 
             return Role(
                 code=role.code,
@@ -99,7 +100,7 @@ class RolesController:
                     role.permissions.append(permission)
                 session.flush()
             except IntegrityError:
-                raise RoleAlredyExistsException(role_in.code)
+                raise RoleAlreadyExistsException(role_in.code)
 
             return Role(
                 code=role.code,

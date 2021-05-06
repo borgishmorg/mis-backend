@@ -19,7 +19,7 @@ from .schemas import (
 class UserAlreadyExistsException(Exception):
 
     def __init__(self, login: str) -> None:
-        super().__init__(Constants.Users.USER_ALREDY_EXISTS_MSG.format(login=login))
+        super().__init__(Constants.Users.USER_ALREADY_EXISTS_MSG.format(login=login))
 
 
 class UserDoesNotExistException(Exception):
@@ -31,25 +31,25 @@ class UserDoesNotExistException(Exception):
 class RoleDoesNotExistException(Exception):
 
     def __init__(self, code: str) -> None:
-        super().__init__(f'Role with code "{code}" does not exist')
+        super().__init__(Constants.Users.ROLE_DOES_NOT_EXIST_MSG.format(code=code))
 
 
 class OldPasswordDoesNotSpecifiedException(Exception):
 
     def __init__(self) -> None:
-        super().__init__(f'Old password must be specified')
+        super().__init__(Constants.Users.OLD_PASSWORD_DOES_NOT_SPECIFIED_MSG)
 
 
 class WrongOldPasswordException(Exception):
 
     def __init__(self) -> None:
-        super().__init__(f'Old password is wrong')
+        super().__init__(Constants.Users.WRONG_OLD_PASSWORD_MSG)
 
 
 class NewPasswordDoesNotSpecifiedException(Exception):
 
     def __init__(self) -> None:
-        super().__init__(f'New password must be specified')
+        super().__init__(Constants.Users.NEW_PASSWORD_DOES_NOT_SPECIFIED_MSG)
 
 
 class UsersController:

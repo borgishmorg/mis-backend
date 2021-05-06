@@ -4,7 +4,7 @@ from ..controller import (
     RolesController, 
     RoleDoesNotExistException,
     PermissionDoesNotExistException,
-    RoleAlredyExistsException
+    RoleAlreadyExistsException
 )
 from ..schemas import Role, RoleIn
 
@@ -19,7 +19,7 @@ async def put_role(
 ) -> Role:
     try:
         return roles.update_role(code, role_in)
-    except RoleAlredyExistsException as exception:
+    except RoleAlreadyExistsException as exception:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=str(exception)

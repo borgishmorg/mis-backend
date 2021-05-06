@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status
 from app.dependencies import Permission, token_payload, TokenPayload
 from ..controller import (
     RolesController, 
-    RoleAlredyExistsException,
+    RoleAlreadyExistsException,
     PermissionDoesNotExistException
 )
 from ..schemas import Role, RoleIn
@@ -17,7 +17,7 @@ async def post_role(
 ) -> Role:
     try:
         return roles.add_role(role_in)
-    except RoleAlredyExistsException as exception:
+    except RoleAlreadyExistsException as exception:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=str(exception)
