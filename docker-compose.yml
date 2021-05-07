@@ -11,4 +11,16 @@ services:
       ENABLE_AUTORELOAD: 'False'
       ENABLE_DEVELOP_MOD: 'False'
       ENABLE_RANDOM_JWT_SECRET: 'True'
-      POSTGRES_DSN: 'postgresql://root:example@localhost:5432/mis'
+      POSTGRES_DSN: 'postgresql://root:example@mis-portgres:5432/mis'
+
+  mis-portgres:
+    image: postgres
+    restart: always
+    ports: 
+      - 5432:5432
+    environment: 
+      POSTGRES_DB: mis
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: example
+    volumes: 
+      - /opt/mis/postgresql:/var/lib/postgresql/data
