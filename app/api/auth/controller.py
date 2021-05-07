@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import jwt
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import joinedload
 from app.models import (
     User as UserModel
 )
@@ -35,6 +36,7 @@ class AuthController:
             user = (
                 session
                 .query(UserModel)
+                .options(joinedload(UserModel.role))
                 .filter(UserModel.login == login)
                 .first()
             )
@@ -43,23 +45,27 @@ class AuthController:
                 user is None 
                 or not check_password_hash(
                     password, 
-                    user.password_hash)
+                    user.password_hash
+                )
             ):
                 raise WrongUserOrPasswordException()
             user = TokenPayload.User(
                 **jsonable_encoder(user),
                 permissions=[p.code for p in user.role.permissions],
             )
-        return Tokens(
-            access_token=self.get_access_token(user),
-            refresh_token=self.get_refresh_token(user)
-        )
+            return Tokens(
+                user=user,
+                access_token=self.get_access_token(user),
+                refresh_token=self.get_refresh_token(user)
+            )
 
     def refresh_tokens(
         self,
         user: TokenPayload.User
     ) -> Tokens:
+        # TODO update from db
         return Tokens(
+            user=user,
             access_token=self.get_access_token(user),
             refresh_token=self.get_refresh_token(user)
         )

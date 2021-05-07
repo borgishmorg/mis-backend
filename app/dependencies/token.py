@@ -25,8 +25,13 @@ class Permission(str, enum.Enum):
 
 class TokenPayload(BaseModel):
     class User(BaseModel):
+        class Role(BaseModel):
+            code: str
+            name: str
+
         id: int
         login: str
+        role: Role
         permissions: list[Permission]
 
     user: User
