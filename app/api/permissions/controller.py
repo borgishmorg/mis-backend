@@ -8,5 +8,10 @@ class PermissionsController:
 
     def get_permissions(self) -> Permissions:
         with session_scope() as session:
-            permissions = session.query(PermissionModel).all()
+            permissions = (
+                session
+                .query(PermissionModel)
+                .order_by(PermissionModel.id)
+                .all()
+            )
             return Permissions(permissions=jsonable_encoder(permissions))

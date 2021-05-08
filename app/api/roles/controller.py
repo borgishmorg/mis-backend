@@ -152,6 +152,7 @@ class RolesController:
                 session
                 .query(RoleModel)
                 .options(joinedload(RoleModel.permissions))
+                .order_by(RoleModel.name)
                 .all()
             )
             return Roles(roles=jsonable_encoder(roles))

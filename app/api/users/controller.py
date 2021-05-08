@@ -167,6 +167,7 @@ class UsersController:
                 session
                 .query(UserModel)
                 .options(joinedload(UserModel.role))
+                .order_by(UserModel.id)
                 .all()
             )
             return Users(users=jsonable_encoder(users))
