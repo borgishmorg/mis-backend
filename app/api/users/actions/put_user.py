@@ -16,7 +16,7 @@ async def put_user(
     user_in: UserInOptional,
     id: int = Path(...),
     token_payload: TokenPayload = Depends(token_payload(
-        check_id=True,
+        # check_id=True,
         permissions=[Permission.USERS_EDIT]
     )),
     users: UsersController = Depends()

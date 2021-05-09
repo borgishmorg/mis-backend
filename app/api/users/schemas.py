@@ -10,8 +10,9 @@ class UserIn(BaseModel):
 
 class UserInOptional(BaseModel):
     login: Optional[str]
-    old_password: Optional[str]
-    new_password: Optional[str]
+    password: Optional[str]
+    # old_password: Optional[str]
+    # new_password: Optional[str]
     role: Optional[str]
 
 

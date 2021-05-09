@@ -101,19 +101,20 @@ class UsersController:
                     user.login = user_in.login
                 
                 if (
-                    user_in.old_password is not None
-                    or user_in.new_password is not None
+                    user_in.password is not None
+                    # user_in.old_password is not None
+                    # or user_in.new_password is not None
                 ):
-                    if user_in.old_password is None:
-                        raise OldPasswordDoesNotSpecifiedException()
-                    if user_in.new_password is None:
-                        raise NewPasswordDoesNotSpecifiedException()
-                    if not check_password_hash(
-                        user_in.old_password, 
-                        user.password_hash
-                    ):
-                        raise WrongOldPasswordException()
-                    user.password_hash = generate_password_hash(user_in.new_password).hex()
+                    # if user_in.old_password is None:
+                    #     raise OldPasswordDoesNotSpecifiedException()
+                    # if user_in.new_password is None:
+                    #     raise NewPasswordDoesNotSpecifiedException()
+                    # if not check_password_hash(
+                    #     user_in.old_password, 
+                    #     user.password_hash
+                    # ):
+                    #     raise WrongOldPasswordException()
+                    user.password_hash = generate_password_hash(user_in.password).hex()
 
                 if user_in.role is not None:
                     role = (
