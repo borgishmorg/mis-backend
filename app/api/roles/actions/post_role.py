@@ -11,7 +11,7 @@ from ..schemas import Role, RoleIn
 async def post_role(
     role_in: RoleIn,
     token_payload: TokenPayload = Depends(token_payload(
-        permissions=[Permission.ROLES_ADD]
+        permissions=[Permission.ROLES_EDIT]
     )),
     roles: RolesController = Depends()
 ) -> Role:

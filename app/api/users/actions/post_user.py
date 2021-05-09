@@ -11,7 +11,7 @@ from ..controller import (
 async def post_user(
     user_in: UserIn,
     token_payload: TokenPayload = Depends(token_payload(
-        permissions=[Permission.USERS_ADD]
+        permissions=[Permission.USERS_EDIT]
     )),
     users: UsersController = Depends()
 ):

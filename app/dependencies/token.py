@@ -15,10 +15,8 @@ class TokenType(enum.Enum):
 
 class Permission(str, enum.Enum):
     PERMISSIONS_VIEW = 'permissions:view'
-    ROLES_ADD = 'roles:add'
     ROLES_EDIT = 'roles:edit'
     ROLES_VIEW = 'roles:view'
-    USERS_ADD = 'users:add'
     USERS_EDIT = 'users:edit'
     USERS_VIEW = 'users:view'
 

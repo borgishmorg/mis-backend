@@ -7,7 +7,7 @@ from ..schemas import User
 async def delete_user(
     id: int = Path(...),
     token_payload: TokenPayload = Depends(token_payload(
-        permissions=[Permission.USERS_ADD]
+        permissions=[Permission.USERS_EDIT]
     )),
     users: UsersController = Depends()
 ) -> User:

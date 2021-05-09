@@ -11,7 +11,7 @@ from ..schemas import Role
 async def delete_role(
     code: str = Path(...),
     token_payload: TokenPayload = Depends(token_payload(
-        permissions=[Permission.ROLES_ADD]
+        permissions=[Permission.ROLES_EDIT]
     )),
     roles: RolesController = Depends()
 ) -> Role:
