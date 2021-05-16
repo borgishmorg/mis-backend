@@ -12,7 +12,8 @@ class Constants:
         PERMISSION_DOES_NOT_EXIST_MSG = 'Permission with code "{code}" does not exist'
 
     class Auth:
-        WRONG_USER_OR_PASSWORD_MSG = 'Wrong user/password'
+        WRONG_USER_OR_PASSWORD_MSG = 'Wrong user/password or user is blocked or deleted'
+        USER_IS_DELETED_OR_BLOCKED_MSG = 'User is deleted or blocked'
 
     class Token:
         LOGIN_URL = 'api/v1/auth/login'

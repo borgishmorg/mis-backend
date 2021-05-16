@@ -24,7 +24,7 @@ def upgrade():
     op.add_column('users', sa.Column('address', sa.String(length=255), nullable=True))
     op.add_column('users', sa.Column('phone', sa.String(length=15), nullable=True))
     op.add_column('users', sa.Column('email', sa.String(length=320), nullable=True))
-    op.add_column('users', sa.Column('blocked', sa.Boolean(), nullable=True))
+    op.add_column('users', sa.Column('blocked', sa.Boolean(), nullable=False))
 
 
 def downgrade():

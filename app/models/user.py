@@ -21,6 +21,6 @@ class User(Base):
     address = Column(String(255))
     phone = Column(String(15))
     email = Column(String(320))
-    blocked = Column(Boolean, default=False)
+    blocked = Column(Boolean, default=False, nullable=False)
 
     role = relationship(argument='Role')

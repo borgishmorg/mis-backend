@@ -25,6 +25,12 @@ class WrongUserOrPasswordException(AuthException):
         super().__init__(Constants.Auth.WRONG_USER_OR_PASSWORD_MSG)
 
 
+class UserIsDeletedOrBlockedException(AuthException):
+
+    def __init__(self) -> None:
+        super().__init__(Constants.Auth.USER_IS_DELETED_OR_BLOCKED_MSG)
+
+
 class AuthController:
 
     def get_tokens(
@@ -37,7 +43,7 @@ class AuthController:
                 session
                 .query(UserModel)
                 .options(joinedload(UserModel.role))
-                .filter(UserModel.login == login)
+                .filter_by(blocked=False, login=login)
                 .first()
             )
 
@@ -61,14 +67,28 @@ class AuthController:
 
     def refresh_tokens(
         self,
-        user: TokenPayload.User
+        payload_user: TokenPayload.User
     ) -> Tokens:
-        # TODO update from db
-        return Tokens(
-            user=user,
-            access_token=self.get_access_token(user),
-            refresh_token=self.get_refresh_token(user)
-        )
+        with session_scope() as session:
+            user = (
+                session
+                .query(UserModel)
+                .options(joinedload(UserModel.role))
+                .filter_by(blocked=False, id=payload_user.id)
+                .first()
+            )
+
+            if user is None:
+                raise UserIsDeletedOrBlockedException()
+            user = TokenPayload.User(
+                **jsonable_encoder(user),
+                permissions=[p.code for p in user.role.permissions],
+            )
+            return Tokens(
+                user=user,
+                access_token=self.get_access_token(user),
+                refresh_token=self.get_refresh_token(user)
+            )
 
     def get_access_token(
         self,

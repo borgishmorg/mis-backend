@@ -1,6 +1,6 @@
-from fastapi import Depends
+from fastapi import Depends, status, HTTPException
 from app.dependencies import token_payload, TokenPayload, TokenType
-from ..controller import AuthController
+from ..controller import AuthController, AuthException
 from ..schemas import Tokens
 
 
@@ -10,4 +10,10 @@ def post_refresh(
     ),
     auth: AuthController = Depends()
 ) -> Tokens:
-    return auth.refresh_tokens(token_payload.user)
+    try:
+        return auth.refresh_tokens(token_payload.user)
+    except AuthException as exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exception)
+        )
