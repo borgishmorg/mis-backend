@@ -58,22 +58,30 @@ with session_scope() as session:
     admin = User(
         login='admin', 
         password_hash=generate_password_hash('admin').hex(),
-        role=admin_role
+        role=admin_role,
+        first_name='Админ',
+        surname='Админов',
     )
     head = User(
         login='head', 
         password_hash=generate_password_hash('head').hex(),
-        role=head_physician_role
+        role=head_physician_role,
+        first_name='Глава',
+        surname='Глав',
     )
     doctor = User(
         login='doctor', 
         password_hash=generate_password_hash('doctor').hex(),
-        role=physician_role
+        role=physician_role,
+        first_name='Доктор',
+        surname='Докторов',
     )
     administrator = User(
         login='administrator', 
         password_hash=generate_password_hash('administrator').hex(),
-        role=administrator_role
+        role=administrator_role,
+        first_name='Администратор',
+        surname='Администраторов',
     )
     session.add_all([
         admin, head, doctor, administrator

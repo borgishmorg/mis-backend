@@ -1,7 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
-from app.hash import check_password_hash, generate_password_hash
+from app.hash import generate_password_hash
 from app.services import session_scope
 from app.models import (
     User as UserModel,
@@ -9,8 +9,8 @@ from app.models import (
 )
 from app.constants import Constants
 from .schemas import (
-    UserIn, 
     User,
+    UserIn, 
     UserInOptional,
     Users,
 )
@@ -34,24 +34,6 @@ class RoleDoesNotExistException(Exception):
         super().__init__(Constants.Users.ROLE_DOES_NOT_EXIST_MSG.format(code=code))
 
 
-class OldPasswordDoesNotSpecifiedException(Exception):
-
-    def __init__(self) -> None:
-        super().__init__(Constants.Users.OLD_PASSWORD_DOES_NOT_SPECIFIED_MSG)
-
-
-class WrongOldPasswordException(Exception):
-
-    def __init__(self) -> None:
-        super().__init__(Constants.Users.WRONG_OLD_PASSWORD_MSG)
-
-
-class NewPasswordDoesNotSpecifiedException(Exception):
-
-    def __init__(self) -> None:
-        super().__init__(Constants.Users.NEW_PASSWORD_DOES_NOT_SPECIFIED_MSG)
-
-
 class UsersController:
 
     def add_user(
@@ -61,7 +43,7 @@ class UsersController:
         'Add new user with specified login, password and role'
         hash = generate_password_hash(user_in.password).hex()
         user = UserModel(
-            login=user_in.login, 
+            **user_in.dict(exclude={'role', 'password'}),
             password_hash=hash
         )
         with session_scope() as session:
@@ -97,44 +79,33 @@ class UsersController:
                 raise UserDoesNotExistException(id)
 
             try:
-                if user_in.login is not None:
-                    user.login = user_in.login
-                
-                if (
-                    user_in.password is not None
-                    # user_in.old_password is not None
-                    # or user_in.new_password is not None
-                ):
-                    # if user_in.old_password is None:
-                    #     raise OldPasswordDoesNotSpecifiedException()
-                    # if user_in.new_password is None:
-                    #     raise NewPasswordDoesNotSpecifiedException()
-                    # if not check_password_hash(
-                    #     user_in.old_password, 
-                    #     user.password_hash
-                    # ):
-                    #     raise WrongOldPasswordException()
+                user.login = user_in.login
+                user.first_name = user_in.first_name
+                user.surname = user_in.surname
+                user.patronymic = user_in.patronymic
+                user.birthdate = user_in.birthdate
+                user.address = user_in.address
+                user.phone = user_in.phone
+                user.email = user_in.email
+                user.blocked = user_in.blocked
+
+                if user_in.password is not None:
                     user.password_hash = generate_password_hash(user_in.password).hex()
 
-                if user_in.role is not None:
-                    role = (
-                        session
-                        .query(RoleModel)
-                        .filter_by(code=user_in.role)
-                        .first()
-                    )
-                    if role is None:
-                        raise RoleDoesNotExistException(user_in.role)
-                    user.role = role
+                role = (
+                    session
+                    .query(RoleModel)
+                    .filter_by(code=user_in.role)
+                    .first()
+                )
+                if role is None:
+                    raise RoleDoesNotExistException(user_in.role)
+                user.role = role
 
                 session.flush()
             except IntegrityError:
                 raise UserAlreadyExistsException(user_in.login)
-            return User(
-                id=user.id,
-                login=user.login,
-                role=jsonable_encoder(user.role)
-            )
+            return self.get_user(user.id)
 
     def delete_user(
         self,
@@ -145,7 +116,7 @@ class UsersController:
             user = session.get(UserModel, id)
             if user is None:
                 raise UserDoesNotExistException(id)
-            session.delete(user) # TODO replace with flag
+            session.delete(user)
             session.flush()
 
     def get_user(

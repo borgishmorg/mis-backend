@@ -5,10 +5,7 @@ from ..controller import (
     UsersController, 
     UserDoesNotExistException,
     UserAlreadyExistsException,
-    RoleDoesNotExistException,
-    OldPasswordDoesNotSpecifiedException,
-    NewPasswordDoesNotSpecifiedException,
-    WrongOldPasswordException
+    RoleDoesNotExistException
 )
 
 
@@ -33,12 +30,7 @@ async def put_user(
             status_code=status.HTTP_409_CONFLICT,
             detail=str(exception)
         )
-    except (
-        RoleDoesNotExistException,
-        OldPasswordDoesNotSpecifiedException,
-        NewPasswordDoesNotSpecifiedException,
-        WrongOldPasswordException
-    ) as exception:
+    except RoleDoesNotExistException as exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(exception)

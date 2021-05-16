@@ -4,9 +4,6 @@ class Constants:
         USER_ALREADY_EXISTS_MSG = 'User with login "{login}" already exists'
         USER_DO_NOT_EXISTS_MSG = 'User with id "{id}" do not exists'
         ROLE_DOES_NOT_EXIST_MSG = 'Role with code "{code}" does not exist'
-        OLD_PASSWORD_DOES_NOT_SPECIFIED_MSG = 'Old password must be specified'
-        WRONG_OLD_PASSWORD_MSG = 'Old password is wrong'
-        NEW_PASSWORD_DOES_NOT_SPECIFIED_MSG = 'New password must be specified'
 
     class Roles:
         ROLE_ALREADY_EXISTS_MSG = 'Role with code "{code}" already exists'
