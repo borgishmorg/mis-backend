@@ -13,7 +13,7 @@ from .schemas import Role, RoleIn, Roles
 class RoleAlreadyExistsException(Exception):
 
     def __init__(self, code: str) -> None:
-        super().__init__(Constants.Roles.ROLE_ALREADY_EXISTS_MSG)
+        super().__init__(Constants.Roles.ROLE_ALREADY_EXISTS_MSG.format(code=code))
 
 
 class RoleDoesNotExistException(Exception):
@@ -96,7 +96,8 @@ class RolesController:
                         .first()
                     )
                     if permission is None:
-                        raise PermissionDoesNotExistException(code=permission_code)
+                        raise PermissionDoesNotExistException(
+                            code=permission_code)
                     role.permissions.append(permission)
                 session.flush()
             except IntegrityError:
