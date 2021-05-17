@@ -59,13 +59,10 @@ class UsersController:
             try:
                 session.add(user)
                 session.flush()
+                user_id = user.id 
             except IntegrityError:
                 raise UserAlreadyExistsException(user_in.login)
-            return User(
-                id=user.id,
-                login=user.login,
-                role=jsonable_encoder(user.role)
-            )
+        return self.get_user(user_id)
 
     def update_user(
         self,

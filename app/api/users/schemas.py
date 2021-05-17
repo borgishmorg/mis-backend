@@ -30,7 +30,6 @@ class User(UserBase):
         name: str = Field(max_lenght=255)
 
     id: int
-    login: str = Field(max_lenght=255)
     role: Optional[Role]
 
 
