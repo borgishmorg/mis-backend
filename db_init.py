@@ -15,10 +15,13 @@ with session_scope() as session:
     roles_view = Permission(code='roles:view', name='Просмотр ролей')
     users_edit = Permission(code='users:edit', name='Редактирование пользователей')
     users_view = Permission(code='users:view', name='Просмотр пользователей')
+    patients_edit = Permission(code='patients:edit', name='Редактирование пациентов')
+    patients_view = Permission(code='patients:view', name='Просмотр пациентов')
     session.add_all([
         permissions_view,
         roles_edit, roles_view,
         users_edit, users_view,
+        patients_edit, patients_view,
     ])
 
     # Roles
@@ -29,6 +32,7 @@ with session_scope() as session:
             permissions_view,
             roles_edit, roles_view,
             users_edit, users_view,
+            patients_edit, patients_view,
         ]
     )
     head_physician_role = Role(
@@ -38,17 +42,22 @@ with session_scope() as session:
             permissions_view,
             roles_view,
             users_edit, users_view,
+            patients_view,
         ]
     )
     physician_role = Role(
         code='physician', 
         name='Врач',
-        permissions=[]
+        permissions=[
+            patients_view,
+        ]
     )
     administrator_role = Role(
         code='administrator', 
         name='Администратор',
-        permissions=[]
+        permissions=[
+            patients_edit, patients_view,
+        ]
     )
     session.add_all([
         admin_role, head_physician_role, physician_role, administrator_role

@@ -19,6 +19,8 @@ class Permission(str, enum.Enum):
     ROLES_VIEW = 'roles:view'
     USERS_EDIT = 'users:edit'
     USERS_VIEW = 'users:view'
+    PATIENTS_EDIT = 'patients:edit'
+    PATIENTS_VIEW = 'patients:view'
 
 
 class TokenPayload(BaseModel):
