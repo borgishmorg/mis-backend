@@ -22,3 +22,6 @@ class Constants:
         INVALID_TOKEN_MSG = 'Invalid token'
         WRONG_TOKEN_TYPE_MSG = 'Wrong token type'
         FORBIDDEN_MSG = 'You don\t have permissions to do that'
+
+    class Patients:
+        PATIENT_DOES_NOT_EXIST_MSP = 'Patient with id "{id}" does not exist'
