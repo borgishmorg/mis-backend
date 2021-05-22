@@ -25,3 +25,7 @@ class Constants:
 
     class Patients:
         PATIENT_DOES_NOT_EXIST_MSP = 'Patient with id "{id}" does not exist'
+
+    class Examinations:
+        EXAMINATION_DOES_NOT_EXIST_MSP = 'Examination with id "{id}" does not exist'
+        USER_OR_PATIENT_DOES_NOT_EXIST_MSG = 'User with id "{user_id}" or patient with id "{patient_id}" does not exists'
