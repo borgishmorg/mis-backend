@@ -38,4 +38,5 @@ class Patient(PatientIn):
 
 
 class Patients(BaseModel):
+    total: int = 0
     patients: list[Patient] = list()

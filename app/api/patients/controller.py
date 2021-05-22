@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import func, or_
 from app.models import Patient as PatientModel
 from app.services import session_scope
 from app.constants import Constants
@@ -14,14 +15,75 @@ class PatientDoesNotExistException(Exception):
 
 class PatientsController:
     
-    def get_patients(self) -> Patients:
+    def get_patients(
+        self, 
+        offset: int = 0, 
+        limit: int = 50
+    ) -> Patients:
         with session_scope() as session:
+            total = (
+                session
+                .query(PatientModel)
+                .count()
+            )
             patients = (
                 session
                 .query(PatientModel)
+                .order_by(
+                    func.lower(PatientModel.surname),
+                    func.lower(PatientModel.first_name),
+                    func.lower(PatientModel.patronymic),
+                )
+                .limit(limit)
+                .offset(offset)
                 .all()
             )
-            return Patients(patients=jsonable_encoder(patients))
+            return Patients(
+                total=total, 
+                patients=jsonable_encoder(patients)
+            )
+
+    def search_patients(
+        self, 
+        q: str,
+        offset: int = 0, 
+        limit: int = 50
+    ) -> Patients:
+        words = [word.lower() for word in q.split()][:3]
+
+        with session_scope() as session:
+            query = session.query(PatientModel)
+
+            for word in words[:-1]:
+                query = query.filter(or_(
+                    func.lower(PatientModel.first_name) == word,
+                    func.lower(PatientModel.surname) == word,
+                    func.lower(PatientModel.patronymic) == word
+                ))
+
+            if len(words) > 0:
+                word = words[-1]
+                query = query.filter(or_(
+                    func.lower(PatientModel.first_name).like(f'{word}%'),
+                    func.lower(PatientModel.surname).like(f'{word}%'),
+                    func.lower(PatientModel.patronymic).like(f'{word}%')
+                ))
+
+            total = query.count()
+            patients = (
+                query
+                .order_by(
+                    func.lower(PatientModel.surname),
+                    func.lower(PatientModel.first_name),
+                    func.lower(PatientModel.patronymic),)
+                .limit(limit)
+                .offset(offset)
+                .all()
+            )
+            return Patients(
+                total=total, 
+                patients=jsonable_encoder(patients)
+            )
 
     def get_patient(
         self,
