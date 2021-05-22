@@ -7,7 +7,7 @@ from ..schemas import Patient
 def get_patient(
     id: int = Path(...),
     patients: PatientsController = Depends(),
-    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.USERS_VIEW]))
+    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.PATIENTS_VIEW]))
 ) -> Patient:
     try:
         return patients.get_patient(id)

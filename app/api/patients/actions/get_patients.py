@@ -10,7 +10,7 @@ def get_patients(
     limit: int = Query(50, gt=0),
     q: Optional[str] = None,
     patients: PatientsController = Depends(),
-    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.USERS_VIEW]))
+    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.PATIENTS_VIEW]))
 ) -> Patients:
     if q is None:
         return patients.get_patients(

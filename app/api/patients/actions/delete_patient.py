@@ -10,7 +10,7 @@ from ..controller import (
 def delete_patient(
     id: int = Path(...),
     patients: PatientsController = Depends(),
-    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.USERS_EDIT]))
+    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.PATIENTS_EDIT]))
 ) -> None:
     try:
         return patients.delete_patient(id)
