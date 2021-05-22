@@ -17,11 +17,14 @@ with session_scope() as session:
     users_view = Permission(code='users:view', name='Просмотр пользователей')
     patients_edit = Permission(code='patients:edit', name='Редактирование пациентов')
     patients_view = Permission(code='patients:view', name='Просмотр пациентов')
+    examinations_edit = Permission(code='examinations:edit', name='Редактирование общих осмотров')
+    examinations_view = Permission(code='examinations:view', name='Просмотр общих осмотров')
     session.add_all([
         permissions_view,
         roles_edit, roles_view,
         users_edit, users_view,
         patients_edit, patients_view,
+        examinations_edit, examinations_view
     ])
 
     # Roles
@@ -33,6 +36,7 @@ with session_scope() as session:
             roles_edit, roles_view,
             users_edit, users_view,
             patients_edit, patients_view,
+            examinations_edit, examinations_view,
         ]
     )
     head_physician_role = Role(
@@ -43,13 +47,31 @@ with session_scope() as session:
             roles_view,
             users_edit, users_view,
             patients_view,
+            examinations_view,
         ]
     )
-    physician_role = Role(
-        code='physician', 
-        name='Врач',
+    therapist_role = Role(
+        code='therapist', 
+        name='Врач-терапевт',
         permissions=[
             patients_view,
+            examinations_view, examinations_edit
+        ]
+    )
+    surgeon_role = Role(
+        code='surgeon', 
+        name='Врач-хирург',
+        permissions=[
+            patients_view,
+            examinations_view, examinations_edit
+        ]
+    )
+    orthopedist_role = Role(
+        code='orthopedist', 
+        name='Врач-ортопед',
+        permissions=[
+            patients_view,
+            examinations_view, examinations_edit
         ]
     )
     administrator_role = Role(
@@ -60,7 +82,12 @@ with session_scope() as session:
         ]
     )
     session.add_all([
-        admin_role, head_physician_role, physician_role, administrator_role
+        admin_role, 
+        head_physician_role, 
+        therapist_role, 
+        surgeon_role, 
+        orthopedist_role, 
+        administrator_role,
     ])
 
     # Users
@@ -78,12 +105,26 @@ with session_scope() as session:
         first_name='Глава',
         surname='Глав',
     )
-    doctor = User(
-        login='doctor', 
-        password_hash=generate_password_hash('doctor').hex(),
-        role=physician_role,
+    therapist = User(
+        login='therapist', 
+        password_hash=generate_password_hash('therapist').hex(),
+        role=therapist_role,
         first_name='Доктор',
-        surname='Докторов',
+        surname='Терапедов',
+    )
+    surgeon = User(
+        login='surgeon', 
+        password_hash=generate_password_hash('surgeon').hex(),
+        role=surgeon_role,
+        first_name='Доктор',
+        surname='Хирургов',
+    )
+    orthopedist = User(
+        login='orthopedist', 
+        password_hash=generate_password_hash('orthopedist').hex(),
+        role=orthopedist_role,
+        first_name='Доктор',
+        surname='Ортопедов',
     )
     administrator = User(
         login='administrator', 
@@ -93,6 +134,11 @@ with session_scope() as session:
         surname='Администраторов',
     )
     session.add_all([
-        admin, head, doctor, administrator
+        admin, 
+        head, 
+        therapist, 
+        surgeon, 
+        orthopedist, 
+        administrator,
     ])
     session.commit()
