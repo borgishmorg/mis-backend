@@ -1,6 +1,7 @@
 from typing import Optional
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, or_
+from sqlalchemy.exc import IntegrityError
 from app.models import Patient as PatientModel
 from app.services import session_scope
 from app.constants import Constants
@@ -11,6 +12,12 @@ class PatientDoesNotExistException(Exception):
 
     def __init__(self, id: int) -> None:
         super().__init__(Constants.Patients.PATIENT_DOES_NOT_EXIST_MSP.format(id=id))
+
+
+class PatientDoesNotEmptyException(Exception):
+
+    def __init__(self, id: int) -> None:
+        super().__init__(Constants.Patients.PATIENT_DOES_NOT_EMPTY_MSP.format(id=id))
 
 
 class PatientsController:
@@ -131,5 +138,8 @@ class PatientsController:
             patient = session.get(PatientModel, id)
             if patient is None:
                 raise PatientDoesNotExistException(id)
-            session.delete(patient)
-            session.flush()
+            try:
+                session.delete(patient)
+                session.flush()
+            except IntegrityError:
+                raise PatientDoesNotEmptyException(id)
