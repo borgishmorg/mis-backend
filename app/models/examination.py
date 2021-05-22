@@ -5,6 +5,7 @@ from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import DateTime, Integer, String
 from .base import Base
 from .user import User
+from .patient import Patient
 
 
 class Examination(Base):
@@ -17,5 +18,7 @@ class Examination(Base):
     diagnosis = Column(String(1000), nullable=False, default='')
     recomendations = Column(String(1000), nullable=False, default='')
     user_id = Column(ForeignKey(User.id), nullable=False)
+    patient_id = Column(ForeignKey(Patient.id), nullable=False)
 
     user = relationship(User)
+    patient = relationship(Patient)
