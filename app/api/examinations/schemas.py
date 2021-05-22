@@ -5,7 +5,6 @@ from ..patients.schemas import Patient
 
 
 class ExaminationIn(BaseModel):
-    datetime: DateTime
     complaints: str = Field(max_length=1000)
     anamnesis: str = Field(max_length=1000)
     diagnosis: str = Field(max_length=1000)
@@ -16,6 +15,7 @@ class ExaminationIn(BaseModel):
 
 class Examination(ExaminationIn):
     id: int
+    datetime: DateTime
     user: User
     patient: Patient
 

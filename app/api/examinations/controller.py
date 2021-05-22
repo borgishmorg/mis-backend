@@ -135,7 +135,6 @@ class ExaminationsController:
                     raise ExaminationDoesNotExistException(id)
                 examination.patient_id = examination_in.patient_id
                 examination.user_id = examination_in.user_id
-                examination.datetime = examination_in.datetime
                 examination.complaints = examination_in.complaints
                 examination.anamnesis = examination_in.anamnesis
                 examination.diagnosis = examination_in.diagnosis
