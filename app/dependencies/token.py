@@ -23,6 +23,12 @@ class Permission(str, enum.Enum):
     PATIENTS_VIEW = 'patients:view'
     EXAMINATIONS_EDIT = 'examinations:edit'
     EXAMINATIONS_VIEW = 'examinations:view'
+    THERAPIST_EXAMINATIONS_EDIT = 'examinations:therapis:edit'
+    THERAPIST_EXAMINATIONS_VIEW = 'examinations:therapis:view'
+    SURGEON_EXAMINATIONS_EDIT = 'examinations:surgeon:edit'
+    SURGEON_EXAMINATIONS_VIEW = 'examinations:surgeon:view'
+    ORTHOPEDIST_EXAMINATIONS_EDIT = 'examinations:orthopedist:edit'
+    ORTHOPEDIST_EXAMINATIONS_VIEW = 'examinations:orthopedist:view'
 
 
 class TokenPayload(BaseModel):

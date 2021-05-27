@@ -19,12 +19,21 @@ with session_scope() as session:
     patients_view = Permission(code='patients:view', name='Просмотр пациентов')
     examinations_edit = Permission(code='examinations:edit', name='Редактирование общих осмотров')
     examinations_view = Permission(code='examinations:view', name='Просмотр общих осмотров')
+    therapist_examinations_edit = Permission(code='examinations:therapis:edit', name='Редактирование терапевтических осмотров')
+    therapist_examinations_view = Permission(code='examinations:therapis:view', name='Просмотр терапевтических осмотров')
+    surgeon_examinations_edit = Permission(code='examinations:surgeon:edit', name='Редактирование хирургических осмотров')
+    surgeon_examinations_view = Permission(code='examinations:surgeon:view', name='Просмотр хирургических осмотров')
+    orthopedist_examinations_edit = Permission(code='examinations:orthopedist:edit', name='Редактирование ортопедических осмотров')
+    orthopedist_examinations_view = Permission(code='examinations:orthopedist:view', name='Просмотр ортопедических осмотров')
     session.add_all([
         permissions_view,
         roles_edit, roles_view,
         users_edit, users_view,
         patients_edit, patients_view,
-        examinations_edit, examinations_view
+        examinations_edit, examinations_view,
+        therapist_examinations_edit, therapist_examinations_view,
+        surgeon_examinations_edit, surgeon_examinations_view,
+        orthopedist_examinations_edit, orthopedist_examinations_view,
     ])
 
     # Roles
@@ -37,6 +46,9 @@ with session_scope() as session:
             users_edit, users_view,
             patients_edit, patients_view,
             examinations_edit, examinations_view,
+            therapist_examinations_edit, therapist_examinations_view,
+            surgeon_examinations_edit, surgeon_examinations_view,
+            orthopedist_examinations_edit, orthopedist_examinations_view,
         ]
     )
     head_physician_role = Role(
@@ -48,6 +60,9 @@ with session_scope() as session:
             users_edit, users_view,
             patients_view,
             examinations_view,
+            therapist_examinations_view,
+            surgeon_examinations_view,
+            orthopedist_examinations_view,
         ]
     )
     therapist_role = Role(
@@ -55,7 +70,8 @@ with session_scope() as session:
         name='Врач-терапевт',
         permissions=[
             patients_view,
-            examinations_view, examinations_edit
+            examinations_view, examinations_edit,
+            therapist_examinations_edit, therapist_examinations_view,
         ]
     )
     surgeon_role = Role(
@@ -63,7 +79,8 @@ with session_scope() as session:
         name='Врач-хирург',
         permissions=[
             patients_view,
-            examinations_view, examinations_edit
+            examinations_view, examinations_edit,
+            surgeon_examinations_edit, surgeon_examinations_view,
         ]
     )
     orthopedist_role = Role(
@@ -71,7 +88,8 @@ with session_scope() as session:
         name='Врач-ортопед',
         permissions=[
             patients_view,
-            examinations_view, examinations_edit
+            examinations_view, examinations_edit,
+            orthopedist_examinations_edit, orthopedist_examinations_view,
         ]
     )
     administrator_role = Role(
