@@ -20,6 +20,7 @@ class Examination(Base):
     recomendations = Column(String(1000), nullable=False, default='')
     user_id = Column(ForeignKey(User.id), nullable=False)
     patient_id = Column(ForeignKey(Patient.id), nullable=False)
+    type = Column(String(20))
 
     user = relationship(User)
     patient = relationship(Patient)

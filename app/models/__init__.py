@@ -5,3 +5,6 @@ from .permission import Permission
 from .role_permission import RolePermission
 from .patient import Patient
 from .examination import Examination
+from .therapist_examination import TherapistExamination
+from .surgeon_examination import SurgeonExamination
+from .orthopedist_examination import OrthopedistExamination
