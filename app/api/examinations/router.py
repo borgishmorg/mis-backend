@@ -1,3 +1,4 @@
+from typing import Union
 from fastapi import APIRouter
 from .actions import (
     get_examination,
@@ -7,7 +8,11 @@ from .actions import (
     delete_examination
 )
 from .schemas import (
-    Examinations, Examination
+    Examinations, 
+    Examination, 
+    OrthopedistExamination, 
+    SurgeonExamination, 
+    TherapistExamination
 )
 
 
@@ -24,19 +29,19 @@ router.add_api_route(
 router.add_api_route(
     path='',
     endpoint=post_examination,
-    response_model=Examination,
+    response_model=Union[Examination, TherapistExamination, SurgeonExamination, OrthopedistExamination],
     methods=['POST']
 )
 router.add_api_route(
     path='/{id}',
     endpoint=get_examination,
-    response_model=Examination,
+    response_model=Union[Examination, TherapistExamination, SurgeonExamination, OrthopedistExamination],
     methods=['GET']
 )
 router.add_api_route(
     path='/{id}',
     endpoint=put_examination,
-    response_model=Examination,
+    response_model=Union[Examination, TherapistExamination, SurgeonExamination, OrthopedistExamination],
     methods=['PUT']
 )
 router.add_api_route(

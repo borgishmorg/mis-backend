@@ -29,4 +29,5 @@ class Constants:
 
     class Examinations:
         EXAMINATION_DOES_NOT_EXIST_MSP = 'Examination with id "{id}" does not exist'
+        WRONG_EXAMIANTION_TYPE_MSP = 'Wrong type for examination with id "{id}"'
         USER_OR_PATIENT_DOES_NOT_EXIST_MSG = 'User with id "{user_id}" or patient with id "{patient_id}" does not exists'
