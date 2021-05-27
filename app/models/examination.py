@@ -15,6 +15,7 @@ class Examination(Base):
     datetime = Column(DateTime, nullable=False, default=current_timestamp())
     complaints = Column(String(1000), nullable=False, default='')
     anamnesis = Column(String(1000), nullable=False, default='')
+    objectively = Column(String(1000), nullable=False, default='')
     diagnosis = Column(String(1000), nullable=False, default='')
     recomendations = Column(String(1000), nullable=False, default='')
     user_id = Column(ForeignKey(User.id), nullable=False)

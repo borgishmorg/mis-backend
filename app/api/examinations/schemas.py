@@ -7,6 +7,7 @@ from ..patients.schemas import Patient
 class ExaminationIn(BaseModel):
     complaints: str = Field(max_length=1000)
     anamnesis: str = Field(max_length=1000)
+    objectively: str = Field(max_length=1000)
     diagnosis: str = Field(max_length=1000)
     recomendations: str = Field(max_length=1000)
     user_id: int

@@ -137,6 +137,7 @@ class ExaminationsController:
                 examination.user_id = examination_in.user_id
                 examination.complaints = examination_in.complaints
                 examination.anamnesis = examination_in.anamnesis
+                examination.objectively = examination_in.objectively
                 examination.diagnosis = examination_in.diagnosis
                 examination.recomendations = examination_in.recomendations
                 session.flush()
