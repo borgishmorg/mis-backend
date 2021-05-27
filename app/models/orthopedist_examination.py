@@ -6,7 +6,7 @@ from .examination import Examination
 class OrthopedistExamination(Base):
     __tablename__ = 'orthopedist_examinations'
 
-    id = Column(ForeignKey(Examination.id), primary_key=True)
+    id = Column(ForeignKey(Examination.id, ondelete="CASCADE"), primary_key=True)
     spine_axis = Column(String(100), nullable=False, default='')
     upper_limb_axis = Column(String(100), nullable=False, default='')
     lower_limb_axis = Column(String(100), nullable=False, default='')

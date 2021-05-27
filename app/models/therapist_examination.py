@@ -6,7 +6,7 @@ from .examination import Examination
 class TherapistExamination(Base):
     __tablename__ = 'therapist_examinations'
 
-    id = Column(ForeignKey(Examination.id), primary_key=True)
+    id = Column(ForeignKey(Examination.id, ondelete="CASCADE"), primary_key=True)
     condition = Column(String(200), nullable=False, default='')
     conscious = Column(String(200), nullable=False, default='')
     cyanosis = Column(String(200), nullable=False, default='')
