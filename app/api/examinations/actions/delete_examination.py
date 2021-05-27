@@ -6,7 +6,7 @@ from ..controller import ExaminationsController, ExaminationDoesNotExistExceptio
 def delete_examination(
     id: int = Path(...),
     examinations: ExaminationsController = Depends(),
-    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.EXAMINATIONS_EDIT]))
+    token_payload: TokenPayload = Depends(token_payload())
 ) -> None:
     try:
         return examinations.delete_examination(id)

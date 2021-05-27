@@ -17,7 +17,7 @@ from ..schemas import (
 def post_examination(
     examination_in: Union[ExaminationIn, TherapistExaminationIn, SurgeonExaminationIn, OrthopedistExaminationIn],
     examinations: ExaminationsController = Depends(),
-    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.EXAMINATIONS_EDIT]))
+    token_payload: TokenPayload = Depends(token_payload())
 ) -> Union[Examination, TherapistExamination, SurgeonExamination, OrthopedistExamination]:
     try:
         return examinations.add_examination(examination_in)

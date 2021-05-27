@@ -10,7 +10,7 @@ def get_examinations(
     limit: int = Query(50, gt=0),
     patient_id: Optional[int] = None,
     examinations: ExaminationsController = Depends(),
-    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.EXAMINATIONS_VIEW]))
+    token_payload: TokenPayload = Depends(token_payload())
 ) -> Examinations:
     if patient_id is None:
         return examinations.get_examinations(

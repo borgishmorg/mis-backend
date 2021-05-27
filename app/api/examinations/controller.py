@@ -1,4 +1,5 @@
 from typing import Optional, Union
+from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -8,6 +9,7 @@ from app.models import (
     SurgeonExamination as SurgeonExaminationModel,
     OrthopedistExamination as OrthopedistExaminationModel
 )
+from app.dependencies import TokenPayload, token_payload, Permission, ForbiddenException
 from app.services import session_scope
 from app.constants import Constants
 from .schemas import (
@@ -59,15 +61,44 @@ EXAMINATIONS_COLUMNS = {
 
 class ExaminationsController:
     
+    def __init__(
+        self,
+        token_payload: TokenPayload = Depends(token_payload())
+    ) -> None:
+        self.view_examinations_types: list[ExaminationType] = []
+        self.edit_examinations_types: list[ExaminationType] = []
+
+        if Permission.EXAMINATIONS_VIEW in token_payload.user.permissions:
+            self.view_examinations_types.append(ExaminationType.GENERAL)
+        if Permission.THERAPIST_EXAMINATIONS_VIEW in token_payload.user.permissions:
+            self.view_examinations_types.append(ExaminationType.THERAPIST)
+        if Permission.SURGEON_EXAMINATIONS_VIEW in token_payload.user.permissions:
+            self.view_examinations_types.append(ExaminationType.SURGEON)
+        if Permission.ORTHOPEDIST_EXAMINATIONS_VIEW in token_payload.user.permissions:
+            self.view_examinations_types.append(ExaminationType.ORTHOPEDIST)
+
+        if Permission.EXAMINATIONS_EDIT in token_payload.user.permissions:
+            self.edit_examinations_types.append(ExaminationType.GENERAL)
+        if Permission.THERAPIST_EXAMINATIONS_EDIT in token_payload.user.permissions:
+            self.edit_examinations_types.append(ExaminationType.THERAPIST)
+        if Permission.SURGEON_EXAMINATIONS_EDIT in token_payload.user.permissions:
+            self.edit_examinations_types.append(ExaminationType.SURGEON)
+        if Permission.ORTHOPEDIST_EXAMINATIONS_EDIT in token_payload.user.permissions:
+            self.edit_examinations_types.append(ExaminationType.ORTHOPEDIST)
+
+
     def get_examinations(
         self, 
         offset: int = 0, 
         limit: int = 50
     ) -> Examinations:
+        if len(self.view_examinations_types) == 0:
+            raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
         with session_scope() as session:
             total = (
                 session
                 .query(ExaminationModel)
+                .filter(ExaminationModel.type.in_(self.view_examinations_types))
                 .count()
             )
             examinations = (
@@ -77,6 +108,7 @@ class ExaminationsController:
                     joinedload(ExaminationModel.patient),
                     joinedload(ExaminationModel.user),
                 )
+                .filter(ExaminationModel.type.in_(self.view_examinations_types))
                 .order_by(ExaminationModel.datetime.desc())
                 .limit(limit)
                 .offset(offset)
@@ -93,10 +125,13 @@ class ExaminationsController:
         offset: int = 0, 
         limit: int = 50
     ) -> Examinations:
+        if len(self.view_examinations_types) == 0:
+            raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
         with session_scope() as session:
             total = (
                 session
                 .query(ExaminationModel)
+                .filter(ExaminationModel.type.in_(self.view_examinations_types))
                 .filter_by(patient_id=patient_id)
                 .count()
             )
@@ -107,6 +142,7 @@ class ExaminationsController:
                     joinedload(ExaminationModel.patient),
                     joinedload(ExaminationModel.user),
                 )
+                .filter(ExaminationModel.type.in_(self.view_examinations_types))
                 .filter_by(patient_id=patient_id)
                 .order_by(ExaminationModel.datetime.desc())
                 .limit(limit)
@@ -122,6 +158,8 @@ class ExaminationsController:
         self,
         id: int
     ) -> Union[Examination, TherapistExamination, SurgeonExamination, OrthopedistExamination]:
+        if len(self.view_examinations_types) == 0:
+            raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
         with session_scope() as session:
             examination: Optional[ExaminationModel] = session.get(
                 ExaminationModel, 
@@ -133,6 +171,8 @@ class ExaminationsController:
             )
             if examination is None:
                 raise ExaminationDoesNotExistException(id)
+            if examination.type not in self.view_examinations_types:
+                raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
             examination = jsonable_encoder(examination)
             if examination['type'] == ExaminationType.THERAPIST:
                 examination_extra: Optional[TherapistExaminationModel] = session.get(TherapistExaminationModel, id)
@@ -158,6 +198,8 @@ class ExaminationsController:
         self,
         examination_in: Union[ExaminationIn, TherapistExaminationIn, SurgeonExaminationIn, OrthopedistExaminationIn]
     ) -> Union[Examination, TherapistExamination, SurgeonExamination, OrthopedistExamination]:
+        if examination_in.type not in self.edit_examinations_types:
+            raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
         with session_scope() as session:
             try:
                 examination = ExaminationModel(**examination_in.dict(include=EXAMINATIONS_COLUMNS))
@@ -195,11 +237,15 @@ class ExaminationsController:
         id: int,
         examination_in: Union[ExaminationIn, TherapistExaminationIn, SurgeonExaminationIn, OrthopedistExaminationIn]
     ) -> Union[Examination, TherapistExamination, SurgeonExamination, OrthopedistExamination]:
+        if examination_in.type not in self.edit_examinations_types:
+            raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
         with session_scope() as session:
             try:
                 examination: Optional[ExaminationModel] = session.get(ExaminationModel, id)
                 if examination is None:
                     raise ExaminationDoesNotExistException(id)
+                if examination.type not in self.edit_examinations_types:
+                    raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
                 if examination.type != examination_in.type:
                     raise WrongExaminationTypeException(id)
                 examination.patient_id = examination_in.patient_id
@@ -242,9 +288,13 @@ class ExaminationsController:
         return self.get_examination(id)
 
     def delete_examination(self, id: int):
+        if len(self.edit_examinations_types) == 0:
+            raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
         with session_scope() as session:
             examination = session.get(ExaminationModel, id)
             if examination is None:
                 raise ExaminationDoesNotExistException(id)
+            if examination.type not in self.edit_examinations_types:
+                raise ForbiddenException(Constants.Token.FORBIDDEN_MSG)
             session.delete(examination)
             session.flush()

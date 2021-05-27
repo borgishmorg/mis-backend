@@ -8,7 +8,7 @@ from ..schemas import Examination, OrthopedistExamination, SurgeonExamination, T
 def get_examination(
     id: int = Path(...),
     examinations: ExaminationsController = Depends(),
-    token_payload: TokenPayload = Depends(token_payload(permissions=[Permission.EXAMINATIONS_VIEW]))
+    token_payload: TokenPayload = Depends(token_payload())
 ) -> Union[Examination, TherapistExamination, SurgeonExamination, OrthopedistExamination]:
     try:
         return examinations.get_examination(id)
