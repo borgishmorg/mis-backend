@@ -56,24 +56,24 @@ class PatientsController:
         offset: int = 0, 
         limit: int = 50
     ) -> Patients:
-        words = [word.lower() for word in q.split()][:3]
+        words = [word.lower().strip() for word in filter(len, q.split())][:3]
 
         with session_scope() as session:
             query = session.query(PatientModel)
 
             for word in words[:-1]:
                 query = query.filter(or_(
-                    func.lower(PatientModel.first_name) == word,
-                    func.lower(PatientModel.surname) == word,
-                    func.lower(PatientModel.patronymic) == word
+                    func.trim(func.lower(PatientModel.first_name)) == word,
+                    func.trim(func.lower(PatientModel.surname)) == word,
+                    func.trim(func.lower(PatientModel.patronymic)) == word
                 ))
 
             if len(words) > 0:
                 word = words[-1]
                 query = query.filter(or_(
-                    func.lower(PatientModel.first_name).like(f'{word}%'),
-                    func.lower(PatientModel.surname).like(f'{word}%'),
-                    func.lower(PatientModel.patronymic).like(f'{word}%')
+                    func.trim(func.lower(PatientModel.first_name)).like(f'{word}%'),
+                    func.trim(func.lower(PatientModel.surname)).like(f'{word}%'),
+                    func.trim(func.lower(PatientModel.patronymic)).like(f'{word}%')
                 ))
 
             total = query.count()
