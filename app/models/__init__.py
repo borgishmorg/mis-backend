@@ -8,3 +8,4 @@ from .examination import Examination
 from .therapist_examination import TherapistExamination
 from .surgeon_examination import SurgeonExamination
 from .orthopedist_examination import OrthopedistExamination
+from .research import Research
