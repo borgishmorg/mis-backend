@@ -8,6 +8,7 @@ class Research(BaseModel):
     id: int
     datetime: datetime
     name: str
+    filetype: str
     user: User
     patient: Patient
 
