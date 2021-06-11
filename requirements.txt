@@ -3,3 +3,4 @@ pyjwt
 SQLAlchemy==1.4.*
 alembic
 psycopg2-binary
+python-multipart

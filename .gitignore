@@ -2,3 +2,4 @@ venv
 .vscode
 *.db
 **/__pycache__
+files

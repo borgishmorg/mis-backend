@@ -6,6 +6,7 @@ from .permissions import router as permissions_router
 from .roles import router as roles_router
 from .patients import router as patients_router
 from .examinations import router as examinations_router
+from .researches import router as researches_router
 
 
 router = APIRouter(
@@ -17,6 +18,7 @@ router.include_router(roles_router, prefix='/v1')
 router.include_router(permissions_router, prefix='/v1')
 router.include_router(patients_router, prefix='/v1')
 router.include_router(examinations_router, prefix='/v1')
+router.include_router(researches_router, prefix='/v1')
 router.add_api_route(
     path='/status',
     endpoint=get_status,
