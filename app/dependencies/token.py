@@ -29,6 +29,8 @@ class Permission(str, enum.Enum):
     SURGEON_EXAMINATIONS_VIEW = 'examinations:surgeon:view'
     ORTHOPEDIST_EXAMINATIONS_EDIT = 'examinations:orthopedist:edit'
     ORTHOPEDIST_EXAMINATIONS_VIEW = 'examinations:orthopedist:view'
+    RESEARCHES_EDIT = 'researches:edit'
+    RESEARCHES_VIEW = 'researches:view'
 
 
 class TokenPayload(BaseModel):
@@ -63,8 +65,8 @@ class ForbiddenException(HTTPException):
 
 def token_payload(
     token_type: TokenType = TokenType.ACCESS,
-    check_id: bool = False, # skip permissions check if request id equal to current user id
-    permissions: Optional[list[Permission]] = None # one of them is required
+    check_id: bool = False,  # skip permissions check if request id equal to current user id
+    permissions: Optional[list[Permission]] = None  # one of them is required
 ) -> Callable[..., TokenPayload]:
     def dependency(
         id: Optional[int] = Path(None) if check_id else Depends(lambda: None),
@@ -90,7 +92,7 @@ def token_payload(
 
         # Permission check
         if (
-            permissions is not None 
+            permissions is not None
             and not (
                 check_id is not None
                 and payload.user.id == id
