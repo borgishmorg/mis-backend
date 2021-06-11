@@ -17,10 +17,17 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('examinations', sa.Column('patient_id', sa.Integer(), nullable=False))
-    op.create_foreign_key(None, 'examinations', 'patients', ['patient_id'], ['id'])
+    op.add_column(
+        'examinations', sa.Column(
+            'patient_id', sa.Integer(), nullable=False))
+    op.create_foreign_key(
+        'examinations_patient_id_fkey',
+        'examinations', 'patients', ['patient_id'], ['id'])
 
 
 def downgrade():
-    op.drop_constraint(None, 'examinations', type_='foreignkey')
-    op.drop_column('examinations', 'patient_id')
+    op.drop_constraint(
+        'examinations_patient_id_fkey',
+        'examinations', type_='foreignkey')
+    op.drop_column(
+        'examinations', 'patient_id')
